@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"reflect"
@@ -68,6 +69,7 @@ func addTaskToFile(filepath string, tasks []string) (string, error) {
 	defer file.Close()
 
 	for _, taskDesc := range tasks {
+
 		taskObj := Task{
 			Id:          idTracker,
 			Description: taskDesc,
@@ -106,9 +108,19 @@ func listAllTasksFromFile(filepath string) (string, error){
 	decoder := json.NewDecoder(file)
 	
 	for decoder.More() {
-    	var t Task
-		if err := decoder.Decode(&t); err == nil {
-			fmt.Println(t)
+    	var task Task
+		if err := decoder.Decode(&task); err == nil {
+			createdAt := task.CreatedAt
+			fmtCreatedAt := createdAt.Format(time.RFC822)
+			updatedAt := task.UpdatedAt
+			fmtUpdatedAt := updatedAt.Format(time.RFC822)
+
+			fmt.Printf("Id:          %d\n", task.Id)
+			fmt.Printf("Task:        %s\n", task.Description)
+			fmt.Printf("Status:      %s\n", task.Status)
+			fmt.Printf("Created At:  %s\n", fmtCreatedAt)
+			fmt.Printf("Updated At:  %s\n", fmtUpdatedAt)
+			fmt.Println("--------------------------------------------------")
 		}
 	}
 
@@ -178,6 +190,7 @@ func updateTaskFromFile(filepath string, args []string) (string, error) {
 	defer file.Close()
 
 	fieldName := args[1]
+	updatedValue := args[2]
 	var tasks []Task
 	decoder := json.NewDecoder(file)
 	
@@ -187,11 +200,22 @@ func updateTaskFromFile(filepath string, args []string) (string, error) {
 			return "", err
 		}
 		if task.Id == intId {
-			ok, err := HasField(task, fieldName)
+			ok, msg := HasField(task, fieldName)
+			err := errors.New(msg)
 			if !ok {
 				return "", err
 			} else {
-				task.fieldName = args[2]
+				switch fieldName {
+				case "Description":
+					task.Description = updatedValue
+				case "Status":
+					task.Status = updatedValue
+				case "Id":
+					return "", fmt.Errorf("Cannot update the id field")
+				default:
+					return "", fmt.Errorf("Cannot update field %s string via CLI", fieldName)
+				}
+				task.UpdatedAt = time.Now()
 			}
 		}
 	}

@@ -86,11 +86,11 @@ var listAllTasksCmd = &cobra.Command{
 	Args: cobra.MaximumNArgs(0),
 
 	Run: func(cmd *cobra.Command, args []string) {
-		result, ok := listAllTasksFromFile(filepath)
+		_, ok := listAllTasksFromFile(filepath)
 		if ok != nil {
 			fmt.Println("Error: ", ok)
 		} else {
-			fmt.Println("Result: ", result)
+			// fmt.Println("Result: ", result)
 		}
 	},
 }
@@ -117,6 +117,7 @@ func init() {
 	rootCmd.AddCommand(addTaskCmd)
 	rootCmd.AddCommand(deleteTaskCmd)
 	rootCmd.AddCommand(listAllTasksCmd)
+	rootCmd.AddCommand(updateTaskCmd)
 }
 
 
