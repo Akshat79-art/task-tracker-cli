@@ -63,22 +63,6 @@ var deleteTaskCmd = &cobra.Command{
 	},
 }
 
-var updateTaskCmd = &cobra.Command{
-	Use: "update",
-	Short: "Update tasks from the file based on id.",
-	Long: "Update tasks from the file based on id.",
-	Args: cobra.MaximumNArgs(2),
-
-	Run: func(cmd *cobra.Command, args []string) {
-		result, ok := updateTaskFromFile(filepath, args)
-		if ok != nil {
-			fmt.Println("Error: ", ok)
-		} else {
-			fmt.Println("Result: ", result)
-		}
-	},
-}
-
 var listAllTasksCmd = &cobra.Command{
 	Use: "list all",
 	Short: "Lists all tasks from the file.",
@@ -89,8 +73,22 @@ var listAllTasksCmd = &cobra.Command{
 		_, ok := listAllTasksFromFile(filepath)
 		if ok != nil {
 			fmt.Println("Error: ", ok)
+		}
+	},
+}
+
+var updateTaskCmd = &cobra.Command{
+	Use: "update",
+	Short: "Update tasks from the file based on id.",
+	Long: "Update tasks from the file based on id.",
+	Args: cobra.MaximumNArgs(3),
+
+	Run: func(cmd *cobra.Command, args []string) {
+		result, ok := updateTaskFromFile(filepath, args)
+		if ok != nil {
+			fmt.Println("Error:", ok)
 		} else {
-			// fmt.Println("Result: ", result)
+			fmt.Println("Result:", result)
 		}
 	},
 }

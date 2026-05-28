@@ -91,7 +91,7 @@ func addTaskToFile(filepath string, tasks []string) (string, error) {
 			return "", err
 		}
 		fmt.Println("Bytes: ", bytes)
-		idTracker += 1
+		idTracker = idTracker + 1
 	}
 	result := fmt.Sprintf("File written succesfully")
 	return result, nil
@@ -218,6 +218,7 @@ func updateTaskFromFile(filepath string, args []string) (string, error) {
 				task.UpdatedAt = time.Now()
 			}
 		}
+		tasks = append(tasks, task)
 	}
 
 	_, errW := file.Seek(0,0)
@@ -229,7 +230,7 @@ func updateTaskFromFile(filepath string, args []string) (string, error) {
 
 	for _, taskObj := range tasks {
 		taskEncoded, err := json.MarshalIndent(taskObj, "", "\t")
-		if err == nil {
+		if err != nil {
 			return "", err
 		}
 		_, err = file.Write(append(taskEncoded, []byte("\n")...))
@@ -238,6 +239,7 @@ func updateTaskFromFile(filepath string, args []string) (string, error) {
 		}
 	}
 
-	return "", nil
+	result := fmt.Sprintf("Task succesfully updated.")
+	return result, nil
 
 }
