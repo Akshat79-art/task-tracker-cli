@@ -77,14 +77,14 @@ var listAllTasksCmd = &cobra.Command{
 	},
 }
 
-var updateTaskCmd = &cobra.Command{
+var updateTaskDescriptionCmd = &cobra.Command{
 	Use: "update",
 	Short: "Update tasks from the file based on id.",
 	Long: "Update tasks from the file based on id.",
-	Args: cobra.MaximumNArgs(3),
+	Args: cobra.MaximumNArgs(2),
 
 	Run: func(cmd *cobra.Command, args []string) {
-		result, ok := updateTaskFromFile(filepath, args)
+		result, ok := updateTaskDescription(filepath, args)
 		if ok != nil {
 			fmt.Println("Error:", ok)
 		} else {
@@ -92,6 +92,58 @@ var updateTaskCmd = &cobra.Command{
 		}
 	},
 }
+
+var updateStatusDoneCmd = &cobra.Command{
+	Use: "updateDone",
+	Short: "Update task status from the file based on id.",
+	Long: "Update task status from the file based on id.",
+	Args: cobra.MaximumNArgs(1),
+
+	Run: func(cmd *cobra.Command, args []string) {
+		args = append(args, "done")
+		result, ok := updateTaskStatus(filepath, args)
+		if ok != nil {
+			fmt.Println("Error:", ok)
+		} else {
+			fmt.Println("Result:", result)
+		}
+	},
+}
+
+var updateStatusInProgressCmd = &cobra.Command{
+	Use: "updateInProgress",
+	Short: "Update task status from the file based on id.",
+	Long: "Update task status from the file based on id.",
+	Args: cobra.MaximumNArgs(1),
+
+	Run: func(cmd *cobra.Command, args []string) {
+		args = append(args, "in-progress")
+		result, ok := updateTaskStatus(filepath, args)
+		if ok != nil {
+			fmt.Println("Error:", ok)
+		} else {
+			fmt.Println("Result:", result)
+		}
+	},
+}
+
+var updateStatusToDoCmd = &cobra.Command{
+	Use: "updateToDo",
+	Short: "Update task status from the file based on id.",
+	Long: "Update task status from the file based on id.",
+	Args: cobra.MaximumNArgs(1),
+
+	Run: func(cmd *cobra.Command, args []string) {
+		args = append(args, "todo")
+		result, ok := updateTaskStatus(filepath, args)
+		if ok != nil {
+			fmt.Println("Error:", ok)
+		} else {
+			fmt.Println("Result:", result)
+		}
+	},
+}
+
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
@@ -115,7 +167,10 @@ func init() {
 	rootCmd.AddCommand(addTaskCmd)
 	rootCmd.AddCommand(deleteTaskCmd)
 	rootCmd.AddCommand(listAllTasksCmd)
-	rootCmd.AddCommand(updateTaskCmd)
+	rootCmd.AddCommand(updateTaskDescriptionCmd)
+	rootCmd.AddCommand(updateStatusDoneCmd)
+	rootCmd.AddCommand(updateStatusInProgressCmd)
+	rootCmd.AddCommand(updateStatusToDoCmd)
 }
 
 

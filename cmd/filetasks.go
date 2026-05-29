@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"reflect"
+	// "reflect"
 	"time"
 	"strconv"
 )
@@ -20,17 +20,6 @@ type Task struct {
 	Status      string    `json:"Status"`
 	CreatedAt   time.Time `json:"CreatedAt"`
 	UpdatedAt   time.Time `json:"UpdatedAt"`
-}
-
-func HasField(obj interface{}, fieldName string) (bool, string) {
-
-	val := reflect.ValueOf(obj)
-	
-    if val.Kind() != reflect.Struct {
-        return false, "Object passed is not a struct"
-    }
-    
-    return val.FieldByName(fieldName).IsValid(), ""
 }
 
 func findObjectInFile(filepath string, searchId int) (*Task, error) {
@@ -176,7 +165,7 @@ func deleteTaskFromFile(filepath string, args []string) (string, error) {
 }
 
 
-func updateTaskFromFile(filepath string, args []string) (string, error) {
+func updateTaskDescription(filepath string, args []string) (string, error) {
 
 	intId, err := strconv.Atoi(args[0])
 	if err != nil {
@@ -189,8 +178,7 @@ func updateTaskFromFile(filepath string, args []string) (string, error) {
 	}
 	defer file.Close()
 
-	fieldName := args[1]
-	updatedValue := args[2]
+	updatedValue := args[1]
 	var tasks []Task
 	decoder := json.NewDecoder(file)
 	
@@ -200,23 +188,8 @@ func updateTaskFromFile(filepath string, args []string) (string, error) {
 			return "", err
 		}
 		if task.Id == intId {
-			ok, msg := HasField(task, fieldName)
-			err := errors.New(msg)
-			if !ok {
-				return "", err
-			} else {
-				switch fieldName {
-				case "Description":
-					task.Description = updatedValue
-				case "Status":
-					task.Status = updatedValue
-				case "Id":
-					return "", fmt.Errorf("Cannot update the id field")
-				default:
-					return "", fmt.Errorf("Cannot update field %s string via CLI", fieldName)
-				}
-				task.UpdatedAt = time.Now()
-			}
+			task.Description = updatedValue
+			task.UpdatedAt = time.Now()
 		}
 		tasks = append(tasks, task)
 	}
@@ -242,4 +215,66 @@ func updateTaskFromFile(filepath string, args []string) (string, error) {
 	result := fmt.Sprintf("Task succesfully updated.")
 	return result, nil
 
+}
+
+func updateTaskStatus(filepath string, args []string) (string, error) {
+	
+	intId, err := strconv.Atoi(args[0])
+	if err != nil {
+		return "", err
+	}
+
+	file, err := os.OpenFile(filepath, os.O_RDWR, 0644)
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+
+	newStatus := args[1]
+	var tasks []Task
+	decoder := json.NewDecoder(file)
+	
+	for decoder.More() {
+		var task Task
+		if err := decoder.Decode(&task); err != nil {
+			return "", err
+		}
+		if task.Id == intId {
+			switch newStatus {
+			case statusOpt[0]:
+				task.Status = statusOpt[0]
+				task.UpdatedAt = time.Now()
+			case statusOpt[1]:
+				task.Status = statusOpt[1]
+				task.UpdatedAt = time.Now()
+			case statusOpt[2]:
+				task.Status = statusOpt[2]
+				task.UpdatedAt = time.Now()
+			default:
+				return "", errors.New("Not a valid status. Something went wrong.")
+			}
+		}
+		tasks = append(tasks, task)
+	}
+
+	_, errW := file.Seek(0,0)
+	if errW != nil {
+		return "", errW
+	}
+
+	file.Truncate(0)
+
+	for _, taskObj := range tasks {
+		taskEncoded, err := json.MarshalIndent(taskObj, "", "\t")
+		if err != nil {
+			return "", err
+		}
+		_, err = file.Write(append(taskEncoded, []byte("\n")...))
+		if err != nil {
+			return "", err
+		}
+	}
+
+	result := fmt.Sprintf("Task succesfully updated.")
+	return result, nil
 }
