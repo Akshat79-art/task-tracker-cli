@@ -17,12 +17,15 @@ var filepath string = "tasktracker.json"
 var rootCmd = &cobra.Command{
 	Use:   "task-cli",
 	Short: "Allows you to maintain a task tracker in json.",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Long: `Allows you to maintain a task tracker in json.
+Commands that you can use:
+add - Adds tasks to the file.
+delete - Delete tasks from the file based on id.
+list - Lists tasks from the file.
+update - Update the description of the task from the file based on id.
+updateDone - Update task status to done for a particular task from the file based on id.
+updateInProgress - Update task status to in-progress for a particular task from the file based on id.
+updateToDo - Update task status to todo for a particular task from the file based on id.`,
 
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
@@ -34,7 +37,8 @@ to quickly create a Cobra application.`,
 var addTaskCmd = &cobra.Command{
 	Use: "add",
 	Short: "Adds tasks to the file.",
-	Long: "Adds tasks to the file.",
+	Long: `Adds tasks to the file. 
+Usage: task-cli add "task description"`,
 	Args: cobra.MaximumNArgs(1),
 
 	Run: func(cmd *cobra.Command, args []string) {
@@ -50,7 +54,8 @@ var addTaskCmd = &cobra.Command{
 var deleteTaskCmd = &cobra.Command{
 	Use: "delete",
 	Short: "Delete tasks from the file based on id.",
-	Long: "Delete tasks from the file based on id.",
+	Long: `Delete tasks from the file based on id. 
+Usage: task-cli delete <id>`,
 	Args: cobra.MaximumNArgs(1),
 
 	Run: func(cmd *cobra.Command, args []string) {
@@ -63,10 +68,13 @@ var deleteTaskCmd = &cobra.Command{
 	},
 }
 
-var listAllTasksCmd = &cobra.Command{
+var listTasksCmd = &cobra.Command{
 	Use: "list [status]",
-	Short: "Lists all tasks from the file.",
-	Long: "Lists all tasks from the file.",
+	Short: "Lists tasks from the file.",
+	Long: `Lists tasks from the file.  
+Usage: task-cli list [status]
+Pass nothing or all to list all tasks.
+Pass done, in-progress, or todo to list tasks with that status.`,
 	Args: cobra.MaximumNArgs(1),
 
 	Run: func(cmd *cobra.Command, args []string) {
@@ -88,8 +96,9 @@ var listAllTasksCmd = &cobra.Command{
 
 var updateTaskDescriptionCmd = &cobra.Command{
 	Use: "update",
-	Short: "Update tasks from the file based on id.",
-	Long: "Update tasks from the file based on id.",
+	Short: "Update the description of the task from the file based on id.",
+	Long: `Update the description of the task from the file based on id. 
+Usage: task-cli update <id> "new description"`,
 	Args: cobra.MaximumNArgs(2),
 
 	Run: func(cmd *cobra.Command, args []string) {
@@ -104,8 +113,9 @@ var updateTaskDescriptionCmd = &cobra.Command{
 
 var updateStatusDoneCmd = &cobra.Command{
 	Use: "updateDone",
-	Short: "Update task status from the file based on id.",
-	Long: "Update task status from the file based on id.",
+	Short: "Updates task status to done for a particular task from the file based on id.",
+	Long: `Updates task status to done for a particular task from the file based on id. 
+Usage: task-cli updateDone <id>`,
 	Args: cobra.MaximumNArgs(1),
 
 	Run: func(cmd *cobra.Command, args []string) {
@@ -121,8 +131,9 @@ var updateStatusDoneCmd = &cobra.Command{
 
 var updateStatusInProgressCmd = &cobra.Command{
 	Use: "updateInProgress",
-	Short: "Update task status from the file based on id.",
-	Long: "Update task status from the file based on id.",
+	Short: "Updates task status to in-progress for a particular task from the file based on id.",
+	Long: `Updates task status to in-progress for a particular task from the file based on id. 
+Usage: task-cli updateInProgress <id>`,
 	Args: cobra.MaximumNArgs(1),
 
 	Run: func(cmd *cobra.Command, args []string) {
@@ -138,8 +149,9 @@ var updateStatusInProgressCmd = &cobra.Command{
 
 var updateStatusToDoCmd = &cobra.Command{
 	Use: "updateToDo",
-	Short: "Update task status from the file based on id.",
-	Long: "Update task status from the file based on id.",
+	Short: "Updates task status to todo for a particular task from the file based on id.",
+	Long: `Updates task status to todo for a particular task from the file based on id. 
+Usage: task-cli updateToDo <id>`,
 	Args: cobra.MaximumNArgs(1),
 
 	Run: func(cmd *cobra.Command, args []string) {
@@ -175,7 +187,7 @@ func init() {
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	rootCmd.AddCommand(addTaskCmd)
 	rootCmd.AddCommand(deleteTaskCmd)
-	rootCmd.AddCommand(listAllTasksCmd)
+	rootCmd.AddCommand(listTasksCmd)
 	rootCmd.AddCommand(updateTaskDescriptionCmd)
 	rootCmd.AddCommand(updateStatusDoneCmd)
 	rootCmd.AddCommand(updateStatusInProgressCmd)

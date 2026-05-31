@@ -10,8 +10,7 @@ import (
 )
 
 var statusOpt = [3]string{"todo", "in-progress", "done"}
-var keys = [5]string{"Id", "Task", "Status", "CreatedAt", "UpdatedAt"}
-var idTracker int = 102
+var idTracker int = 100
 
 type Task struct {
 	Id          int       `json:"Id"`
@@ -48,7 +47,6 @@ func findObjectInFile(filepath string, searchId int) (*Task, error) {
 }
 
 func addTaskToFile(filepath string, tasks []string) (string, error) {
-	fmt.Println("Adding task from inside the function")
 
 	file, err := os.OpenFile(filepath, os.O_CREATE | os.O_WRONLY | os.O_APPEND, 0644)
 	if err != nil {
@@ -56,6 +54,7 @@ func addTaskToFile(filepath string, tasks []string) (string, error) {
 	}
 	defer file.Close()
 
+	taskAddedId := []int{}
 	for _, taskDesc := range tasks {
 
 		taskObj := Task{
@@ -79,9 +78,10 @@ func addTaskToFile(filepath string, tasks []string) (string, error) {
 			return "", err
 		}
 		fmt.Println("Bytes: ", bytes)
+		taskAddedId = append(taskAddedId, idTracker)
 		idTracker = idTracker + 1
 	}
-	result := fmt.Sprintf("File written succesfully")
+	result := fmt.Sprintf("Task created successfully with ids: %v", taskAddedId)
 	return result, nil
 }
 
