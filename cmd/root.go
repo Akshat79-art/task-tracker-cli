@@ -64,13 +64,22 @@ var deleteTaskCmd = &cobra.Command{
 }
 
 var listAllTasksCmd = &cobra.Command{
-	Use: "list all",
+	Use: "list [status]",
 	Short: "Lists all tasks from the file.",
 	Long: "Lists all tasks from the file.",
-	Args: cobra.MaximumNArgs(0),
+	Args: cobra.MaximumNArgs(1),
 
 	Run: func(cmd *cobra.Command, args []string) {
-		_, ok := listAllTasksFromFile(filepath)
+
+		if len(args) == 0 {
+			args = append(args, "all")
+		}
+		if args[0] != "all" && args[0] != "done" && args[0] != "in-progress" && args[0] != "todo" {
+			fmt.Println("Error: Invalid status. Please use 'all', 'done', 'in-progress', or 'todo'.")
+			return
+		}
+
+		_, ok := listAllTasksFromFile(filepath, args)
 		if ok != nil {
 			fmt.Println("Error: ", ok)
 		}

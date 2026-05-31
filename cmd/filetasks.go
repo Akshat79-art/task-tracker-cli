@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	// "reflect"
 	"time"
 	"strconv"
 )
@@ -86,37 +85,6 @@ func addTaskToFile(filepath string, tasks []string) (string, error) {
 	return result, nil
 }
 
-func listAllTasksFromFile(filepath string) (string, error){
-
-	file, err := os.Open(filepath)
-	if err != nil {
-		return "", err
-	}
-	defer file.Close()
-
-	decoder := json.NewDecoder(file)
-	
-	for decoder.More() {
-    	var task Task
-		if err := decoder.Decode(&task); err == nil {
-			createdAt := task.CreatedAt
-			fmtCreatedAt := createdAt.Format(time.RFC822)
-			updatedAt := task.UpdatedAt
-			fmtUpdatedAt := updatedAt.Format(time.RFC822)
-
-			fmt.Printf("Id:          %d\n", task.Id)
-			fmt.Printf("Task:        %s\n", task.Description)
-			fmt.Printf("Status:      %s\n", task.Status)
-			fmt.Printf("Created At:  %s\n", fmtCreatedAt)
-			fmt.Printf("Updated At:  %s\n", fmtUpdatedAt)
-			fmt.Println("--------------------------------------------------")
-		}
-	}
-
-	result := "Succesfully listed all tasks"
-	return result, nil
-}
-
 func deleteTaskFromFile(filepath string, args []string) (string, error) {
 	
 	intId, err := strconv.Atoi(args[0])
@@ -164,6 +132,39 @@ func deleteTaskFromFile(filepath string, args []string) (string, error) {
 	return "", nil
 }
 
+func listAllTasksFromFile(filepath string, args []string) (string, error){
+
+	file, err := os.Open(filepath)
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+
+	statusToFilter := args[0]
+	decoder := json.NewDecoder(file)
+	
+	for decoder.More() {
+    	var task Task
+		if err := decoder.Decode(&task); err == nil {
+			if statusToFilter == "all" || task.Status == statusToFilter {
+				createdAt := task.CreatedAt
+				fmtCreatedAt := createdAt.Format(time.RFC822)
+				updatedAt := task.UpdatedAt
+				fmtUpdatedAt := updatedAt.Format(time.RFC822)
+
+				fmt.Printf("Id:          %d\n", task.Id)
+				fmt.Printf("Task:        %s\n", task.Description)
+				fmt.Printf("Status:      %s\n", task.Status)
+				fmt.Printf("Created At:  %s\n", fmtCreatedAt)
+				fmt.Printf("Updated At:  %s\n", fmtUpdatedAt)
+				fmt.Println("--------------------------------------------------")
+			}
+		}
+	}
+
+	result := "Succesfully listed all tasks"
+	return result, nil
+}
 
 func updateTaskDescription(filepath string, args []string) (string, error) {
 
